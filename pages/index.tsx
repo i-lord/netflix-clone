@@ -4,6 +4,10 @@ import Banner from '../components/Banner'
 import { Movie } from '../typin'
 import requests from '../utils/requests'
 import Row from '../components/Row'
+import useAuth from '../hooks/useAuth'
+import { useRecoilValue } from 'recoil'
+import { modalState } from '../atoms/modalAtoms'
+import Modal from '../components/Modal'
 
 interface props {
   netflixOriginals: Movie[],
@@ -16,7 +20,7 @@ interface props {
   documentaries: Movie[],
 }
 
-export default function Home( {
+const Home = ({
   netflixOriginals,
   trendingNow,
   topRated,
@@ -25,8 +29,16 @@ export default function Home( {
   horrorMovies,
   romanceMovies,
   documentaries,
-}:props ) 
-{
+}:props ) =>  {
+
+const { loading } = useAuth()
+const showModal = useRecoilValue(modalState)
+// const showModal = useRecoilValue() the same as using useState const [showModal, setShowModal] = useState(false)the difference is useRecoil we only have to use a customer hook useRecoilValue
+
+
+if (loading) return null
+
+
   return (
     <div className='relative h-screen bg-gradient-to-b lg:h-[140vh]'>
       <Head>
@@ -36,23 +48,26 @@ export default function Home( {
       </Head>
       <Header />
       <main className='relative pl-4 pb-24 lg:space-y-24 lg:pl-16'>
-      <Banner netflixOriginals= {netflixOriginals}/>
+      <Banner netflixOriginals= {trendingNow}/>
         <section className='md:space-y-24'>
           {/* continue Watching */}
           {/* My List */ }
           <Row title = 'Trending Now' movies={trendingNow} /> 
           <Row title = 'Top Rated' movies = {topRated} />
           <Row title = 'Action Thriller' movies = {actionMovies} />
-          <Row title = 'Comedies' movies = {comedyMovies} />
+          <Row title = 'Comedy' movies = {comedyMovies} />
+          <Row title = 'Originals' movies = {netflixOriginals} />
           <Row title = 'Scary Movies' movies = {horrorMovies} />
           <Row title = 'Romance Movies' movies = {romanceMovies} />
           <Row title = 'Documentaries' movies = {documentaries} /> 
         </section>
       </main>
-      {/* Modal */}
+      {showModal && <Modal/>}
     </div>
   )
 }
+
+export default Home
 
 export const getServerSideProps = async () =>{
   const [
@@ -88,3 +103,4 @@ export const getServerSideProps = async () =>{
     },
   }
 }
+

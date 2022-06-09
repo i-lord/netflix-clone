@@ -13,7 +13,7 @@ export interface Movie {
     id: number
     name: string
     origin_country: string[]
-    original_languaga: string
+    original_language: string
     original_name: string
     overview: string
     popularity: number
