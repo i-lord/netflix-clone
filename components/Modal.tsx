@@ -28,10 +28,14 @@ function Modal() {
         if(!movie) return 
         async function fetchMovie(){
             // Fetch movie details from TMDb API, including videos (trailers)
-            const data = await fetch(
-                `https://api.themoviedb.org/3/${movie?.media_type === 'tv' ? 'tv' : 'movie'}/${movie?.id}?api_key=${process.env.NEXT_PUBLIC_API_KEY}&language=en-US&append_to_response=videos`
-            ).then((response) => response.json())
-            .catch((err) => console.log(err.message))
+            const url = `https://api.themoviedb.org/3/${movie?.media_type === 'tv' ? 'tv' : 'movie'}/${movie?.id}?api_key=${process.env.NEXT_PUBLIC_API_KEY}&language=en-US&append_to_response=videos`
+            console.log(url)
+            const response = await fetch(url)
+            if (!response.ok) {
+                console.error('API error:', response.status, await response.text())
+                return
+            }
+            const data = await response.json()
 
             // Find the first trailer in the videos list and set the YouTube key
             if(data?.videos) {
